@@ -56,6 +56,7 @@
   <h1>jsQR Demo</h1>
   
   <p>Test per l'utilizzo della webcam</p>
+  <p><button>FERMATE! / RICOMINCIA!</button></p>
   <div id="loadingMessage">🎥 Unable to access video stream (please make sure you have a webcam enabled)</div>
   <canvas id="canvas" hidden></canvas>
   <div id="output" hidden>
@@ -70,6 +71,7 @@
     var outputContainer = document.getElementById("output");
     var outputMessage = document.getElementById("outputMessage");
     var outputData = document.getElementById("outputData");
+    var registrando = false;
 
     function drawLine(begin, end, color) {
       canvas.beginPath();
@@ -85,8 +87,19 @@
       video.srcObject = stream;
       video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
       video.play();
+      registrando = true;
       requestAnimationFrame(tick);
     });
+
+    function cambia(){
+      if(registrando){
+        video.stop();
+        registrando = false;
+      } else {
+        video.play();
+        registrando = true;
+      }
+    }
 
     function tick() {
       loadingMessage.innerText = "⌛ Loading video..."
@@ -110,12 +123,16 @@
           outputMessage.hidden = true;
           outputData.parentElement.hidden = false;
           outputData.innerText = code.data;
+          registrando = false;
+          video.stop();
         } else {
           outputMessage.hidden = false;
           outputData.parentElement.hidden = true;
         }
       }
-      requestAnimationFrame(tick);
+      if(registrando){
+        requestAnimationFrame(tick);
+      }
     }
   </script>
 </body>
